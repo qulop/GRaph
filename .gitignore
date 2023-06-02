@@ -1,0 +1,54 @@
+# IDE folders
+.vs/
+.vscode/
+
+# build section
+build/
+build_tools/
+
+# future section
+glib/
+graph/
+stack/
+
+# some other files...
+CMakeLists.txt
+list_ex.cpp
+queue_ex.cpp
+stack_ex.cpp
+tree_ex.cpp
+list.txt
+tree.txt
+
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
