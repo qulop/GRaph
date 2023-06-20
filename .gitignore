@@ -4,21 +4,18 @@
 
 # build section
 build/
-build_tools/
+build.bat
+__tests__/
 
 # future section
 glib/
-graph/
-stack/
+gnet/
+gstack/
+gvec/
+gmemory/
 
-# some other files...
-CMakeLists.txt
-list_ex.cpp
-queue_ex.cpp
-stack_ex.cpp
-tree_ex.cpp
-list.txt
-tree.txt
+# some other files/extensions...
+*.png
 
 # Prerequisites
 *.d
