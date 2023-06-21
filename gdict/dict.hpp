@@ -11,7 +11,7 @@ TODO:
 #include <utility>
 #include <memory>
 
-namespace Gistd
+namespace Graph 
 {
 
 #define _CalledIncrementTag 0

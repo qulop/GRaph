@@ -5,7 +5,6 @@
 # build section
 build/
 build.bat
-__tests__/
 
 # future section
 glib/
@@ -16,6 +15,7 @@ gmemory/
 
 # some other files/extensions...
 *.png
+__tests__/
 
 # Prerequisites
 *.d

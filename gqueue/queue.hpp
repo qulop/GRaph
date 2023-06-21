@@ -4,7 +4,7 @@
 #include "../glist/list.hpp"
 
 
-namespace Gistd
+namespace Graph
 {
 
 template<typename _Tx, typename _Cont=List<_Tx>>
