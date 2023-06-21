@@ -172,8 +172,7 @@ private:
         node->next->previous = node->previous;  // next_node->previous = node->previous
     }
 
-    [[nodiscard]] std::pair<Iterator, size_t> 
-    __copy_until_reaches_value(size_t value, const List& other)
+    [[nodiscard]] Iterator __copy_until_reaches_value(size_t value, const List& other)
     {
         Iterator _our_it = begin();
         Iterator _alien_it = other.begin();
@@ -182,7 +181,7 @@ private:
         for (_i; _i < value; _our_it++, _alien_it++, _i++)
             _our_it->data = _alien_it->data;
 
-        return std::pair<Iterator, size_t>(((lsize > other.lsize) ? ++_our_it : ++_alien_it), (_i + 1));        
+        return (lsize > other.lsize) ? ++_our_it : ++_alien_it;        
     }
 
     void __erase_extra_nodes(Iterator iter)
@@ -191,19 +190,10 @@ private:
             erase(iter);
     }
 
-    void __add_missing_nodes(Iterator iter, size_t alien_size, size_t pos_index)
+    void __add_missing_nodes(Iterator iter, ConstIterator end)
     {
-        // allocator.
-        // void* _buffer = std::malloc(sizeof(_LNode) * (alien_size - pos_index));
-        // assert(_buffer != nullptr, "failed to allocate memory to _buffer");
-        // size_t delim = 0;
-
-        // for (pos_index; pos_index < alien_size; pos_index++)
-        // {
-        //     _LNode* _node = static_cast<_LNode*>()
-        // }
-
-
+        for (iter; iter != end; iter++)
+            push_back(*iter);
     }
 
 public:
@@ -271,9 +261,6 @@ public:
 
         __separate_node(_last_node);
 
-        // last_node->previous->next = edge; // the same as penulimate_node->next = edge
-        // edge->previous = last_node->previous;
-
         allocator.deallocate(_last_node, 1);
 
         lsize -= 1;
@@ -287,9 +274,6 @@ public:
         auto data = _first_node->data;
 
         __separate_node(_first_node);
-
-        // first_node->next->previous = edge;    // the same as second_node->previous = edge
-        // edge->next = first_node->next;
 
         allocator.deallocate(_first_node, 1);
 
@@ -371,12 +355,12 @@ public:
     List& operator=(const List& other)
     { 
         edge->data = other.edge->data;
-        auto [_iter, _pos] = __copy_until_reaches_value((lsize < other.size) ? lsize : other.lsize);
+        auto _iter = __copy_until_reaches_value((lsize < other.size) ? lsize : other.lsize);
 
         if (lsize > other.lsize)
             __erase_extra_nodes(_iter);
         else if (lsize < other.lsize)
-            __add_missing_nodes(_iter, other.lsize, _pos);
+            __add_missing_nodes(_iter, other.end());
         
         lsize = other.lsize; 
         return *this;    
@@ -396,7 +380,7 @@ public:
 
     List& operator+=(const List& other)
     {
-        __add_missing_nodes(other.begin(), other.size(), 0);
+        __add_missing_nodes(other.begin(), other.end());
         lsize += other.lsize;
 
         return *this;
@@ -404,13 +388,13 @@ public:
 
     ~List()
     {
-        if (edge == nullptr)    // if move-constructor/operator was called
-            return;
-
-        Iterator it = begin();
-        for (it; it != end(); ++it)
-            it = erase(it);
-        erase(it);
+        if (edge != nullptr)    // if move-constructor/operator wasn't called
+        {
+            Iterator it = begin();
+            for (it; it != end(); ++it)
+                it = erase(it);
+            erase(it);
+        }
     }
 };
 

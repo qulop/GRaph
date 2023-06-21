@@ -7,11 +7,11 @@ build/
 build.bat
 
 # future section
-glib/
-gnet/
-gstack/
-gvec/
-gmemory/
+graph/lib/
+graph/network/
+graph/stack/
+graph/vec/
+graph/memory/
 
 # some other files/extensions...
 *.png
