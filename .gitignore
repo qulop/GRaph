@@ -8,7 +8,7 @@ build.bat
 
 # future section
 graph/lib/
-graph/network/
+graph/net/
 graph/stack/
 graph/vec/
 graph/memory/

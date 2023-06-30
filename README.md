@@ -11,7 +11,7 @@ GRaph included all main algorithms, such as:
 + (Not complite) Stack - `Stack`
 + Binary search tree(Red-Black) - `Dict`
   + (Not complite) Hash-Table - `UnorderedDict`
-+ (Not complite) Graph - `Network`
++ (Not complite) Graph - `Net`
 + (Not complite) Memory algorithms 
 + (Not complite) Basic algorithms
   

@@ -1,5 +1,5 @@
-#ifndef __glist_hpp
-#define __glist_hpp
+#ifndef __graph_list_hpp
+#define __graph_list_hpp
 
 // #define NDEBUG
 
@@ -8,14 +8,6 @@
 #include <initializer_list>
 #include <utility>
 #include <memory>
-
-
-// template<typename _BasicListIteratorType>
-// concept Bidirectional_BasicListIteratorTraits = requires(_BasicListIteratorType a)
-//     {
-//         { ++a } -> std::same_as<_BasicListIteratorType&>;
-//         { --a } -> std::same_as<_BasicListIteratorType&>;
-//     };
 
 
 namespace Graph
@@ -109,37 +101,6 @@ public:
 
     ~_BasicListIterator()
     { node = nullptr; }
-};
-
-
-template<typename _Tx>
-class _ListReverseIterator : public _BasicListIterator<_Tx>
-{
-    // _ListReverseIterator& operator++(void)
-    // {
-    //     node = node->previous;
-    //     return *this;
-    // }
-
-    // _ListReverseIterator operator++(int)
-    // {
-    //     auto tmp = *this;
-    //     ++*this;
-    //     return tmp;
-    // }
-
-    // _ListReverseIterator& operator--(void)
-    // {
-    //     node = node->next;
-    //     return *this;
-    // }
-
-    // _ListReverseIterator operator--(int)
-    // {
-    //     auto tmp = *this;
-    //     --*this;
-    //     return tmp;
-    // }
 };
 
 

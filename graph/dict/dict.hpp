@@ -1,223 +1,144 @@
-/*
-TODO:
-    1) Assign operator for Dict
-    2) Make DictIter bidirectional (IN PROCESS)
-*/
-#ifndef __gdict_hpp
-#define __gdict_hpp
+#ifndef __graph_dict_hpp
+#define __graph_dict_hpp
 
 #include <iterator>
 #include <initializer_list>
 #include <utility>
 #include <memory>
+#include <cassert>
+#include "_dnode.hpp"
 
 namespace Graph 
 {
 
-#define _CalledIncrementTag 0
-#define _CalledDecrementTag 1
-#define _IsSubtreeTop(node) ((node->left != nullptr && node->right != nullptr)) 
-// In this case, Subtree Top - it is node, 
-// that stricly have two childs nodes
-
-enum _DNColor    // Dictionary node color
+template<typename _Tree>
+class _TreeBasicIterator
 {
-    RED, BLACK
-};
+public:
+
+    using _NodePtr = typename _Tree::_NodePtr;
+    using ValueType = typename _Tree::ValueType;
+    using Pointer = _NodePtr;
+    using _MyIter = _TreeBasicIterator<_Tree>;
 
 
-template<typename _Key, typename _Value>
-struct _DNode
-{
-    using _DColor = _DNColor;
+    _NodePtr node = nullptr;
 
-    _Key key;
-    _Value value;
-
-    _DNode* left = nullptr;
-    _DNode* right = nullptr;
-    _DNode* parent = nullptr;
+    _TreeBasicIterator(void) = delete;
     
-    _DColor color = BLACK;
-
-    _DNode(void) = default;
-
-    _DNode(_Key key, _Value value) :
-        key(key), value(value) {}
-
-    ~_DNode(void)
-    { left = nullptr; right = nullptr; }
-};
-
-
-template<typename _Key, typename _Value>
-class _BasicDictionaryIterator : public std::iterator<std::bidirectional_iterator_tag, _Key>
-{
-public:
-    using _DNode = _DNode<_Key, _Value>;
-
-private:
-
-    // dn - mean __get_deepest_node() function
-    _DNode* __get_condition_way_for_dn(_DNode* node, bool tag)
-    { return (tag == _CalledIncrementTag) ? node->left : node->right; }
-
-    _DNode* __get_condition_way(_DNode* node, bool tag)
-    { return (tag == _CalledIncrementTag) ? node->right : node->left; }
-
-    _DNode* __get_deepest_node(_DNode* node, bool tag)
-    {
-        while (true)
-        {
-           if (__get_condition_way_for_dn(node, tag) == nullptr)
-                return node;
-            node = node->left;
-        }
-    }
-
-    // returns next node in depend from calling operator(++/--)
-    // <bool tag> - operaion(0 - increment, 1 - decrement)
-    _DNode* __next(_DNode* node, bool tag)
-    {
-        if (__get_condition_way(node, tag) != nullptr)
-            return __get_deepest_node(__get_condition_way(node, tag), tag);
-
-        while (true)
-        {
-            _DNode* parent = node->parent;
-            if (parent == nullptr)
-                return nullptr;
-
-            if (!_IsSubtreeTop(parent) || node != __get_condition_way(parent, tag))
-                return parent;
-            node = parent;
-        }
-    }
-
-public:
-
-    _DNode* node;
-
-    _BasicDictionaryIterator(void) = default;
-
-    explicit _BasicDictionaryIterator(_DNode* node) :
-        node(node) 
+    _TreeBasicIterator(_NodePtr node) noexcept :
+        node(node)
     {}
 
-    _BasicDictionaryIterator(const _BasicDictionaryIterator& other) :
-        node(other.node) 
+    _TreeBasicIterator(_MyIter& other) noexcept :
+        node(other.node)
     {}
 
-    _BasicDictionaryIterator(_BasicDictionaryIterator&& other)
+    _TreeBasicIterator(_MyIter&& other) noexcept :
+        node(other.node)
+    { other.node = nullptr; }
+
+    _MyIter& next(void)
+    { return ++*this; }
+
+    bool has_next(void)
+    { return node == nullptr; }
+
+    _MyIter& operator=(const _MyIter& other) noexcept
     {
         node = other.node;
+        return *this;
+    }
+
+    _MyIter& operator=(_MyIter&& other) noexcept
+    {
+        *this = other;
         other.node = nullptr;
-    }
-
-    _BasicDictionaryIterator& operator++(void)
-    {
-        node = __next(node, _CalledIncrementTag);         
         return *this;
     }
 
-    _BasicDictionaryIterator operator++(int)
-    {
-        auto tmp = *this;
-        ++*this; 
-        return tmp; 
-    }
+    bool operator==(const _MyIter& other) const noexcept
+    { return node == other.node; };
 
-    _BasicDictionaryIterator& operator--(void)
-    {
-        node = __next(node, _CalledDecrementTag);
-        return *this;
-    }
-
-    _BasicDictionaryIterator operator--(int)
-    {
-        auto tmp = *this;
-        --*this; 
-        return tmp; 
-    }
-
-    _BasicDictionaryIterator& operator=(const _BasicDictionaryIterator& other) 
-    {   
-        node = other.node; 
-        return *this; 
-    }
-
-    _BasicDictionaryIterator& operator=(_BasicDictionaryIterator&& other)
-    {
-        node = std::move(other);
-        return *this;
-    }
-
-    constexpr bool operator==(const _BasicDictionaryIterator& other) const
-    { return (node == other.node); } 
-
-    constexpr bool operator==(const _DNode* other) const
-    { return node == other; }
-
-    constexpr bool operator!=(const _BasicDictionaryIterator& other) const
+    bool operator!=(const _MyIter& other) const noexcept
     { return !(*this == other.node); }
 
-    _Value& operator*(void) const
-    { return node->value; }
+    ValueType operator*(void) const noexcept
+    { return ValueType{ node->key, node->value }; }
+
+    // Pointer operator->(void) const noexcept
+    // { return std::pointer_traits<_NodePtr>::pointer_to(**this); }
+
+    _MyIter& operator++(void) noexcept
+    {
+        if (node->left == nullptr)
+        {
+            node = node->right;
+            return *this;
+        }
+
+        _NodePtr rmost = node->left;
+        while (rmost->right != nullptr && rmost->right != node)
+            rmost = rmost->right;
+
+        if (rmost->right == nullptr)
+        {
+            rmost->right = node;
+            node = node->left;
+        } 
+        else
+        {
+            rmost->right = nullptr;
+            node = node->right;
+            return *this;
+        }
+
+        return ++*this;
+    }
+
+    _MyIter operator++(int) noexcept
+    {
+        _MyIter tmp = node;
+        ++*this;
+
+        return tmp;
+    }
 };
 
 
-template<typename _Key, typename _Value>
-class _DictionaryReverseIterator : public _BasicDictionaryIterator<_Key, _Value> 
-{
-    
-};
-
-
-template<typename _Key, typename _Value>
+template<typename _Key, typename _Value, typename _Alloc=std::allocator<_DNode<_Key, _Value>>>
 class Dict
 {
-// Basic tree implementation
+// Red-Black tree implementation
 public:
-    using key_type = _Key;
-    using value_type = _Value;
+    using KeyType = _Key;
+    using ValueType = std::pair<KeyType, _Value>;
+    using _Node = _DNode<_Key, _Value>;
+    using _NodePtr = _Node*;
 
-    using _DNode = _DNode<_Key, _Value>;
-
-    using Iterator = _BasicDictionaryIterator<_Key, _Value>;
-    using ConstIterator = const _BasicDictionaryIterator<_Key, _Value>;
-    using ReverseIterator = _DictionaryReverseIterator<_Key, _Value>;
-    using ConstReverseIterator = const _DictionaryReverseIterator<_Key, _Value>; 
+    using Iterator = _TreeBasicIterator<Dict<_Key, _Value>>;
+    using ConstIterator = const _TreeBasicIterator<Dict<_Key, _Value>>;
 
 private:
-    _DNode* root = nullptr;
+
+    _NodePtr root = nullptr;    
     size_t dsize = 0;
 
-    void __create_edge_node(void)
+
+    _NodePtr __init_new_node(_NodePtr prnt, const _Key& key, const _Value& value) noexcept
     {
-        root->parent = new _DNode();
-        root->parent->left = root;
-    }
+        _NodePtr node = new _Node{ key, value };
+        node->parent = prnt;
 
-    Iterator __dmin(_DNode* node)  const
-    {
-        while (node->left != nullptr)
-            node = node->left;
+        ++dsize;
 
-        return Iterator{ node };
-    }
-
-    Iterator __dmax(_DNode* node) const
-    {
-        while (node->right != nullptr)
-            node = node->right;
-
-        return Iterator{ node };
+        return node;
     }
 
     // Erasing without any childs
-    Iterator __simple_erase(Iterator iter)
+    Iterator __simple_erase(Iterator iter) noexcept
     {
-        _DNode* parent = (iter.node)->parent;
+        _NodePtr* parent = (iter.node)->parent;
         if (parent->left == iter.node)
             parent->left = nullptr;
         else
@@ -227,10 +148,10 @@ private:
         return Iterator{ parent };
     }
 
-    Iterator __erase_wth_one_child(Iterator iter)
+    Iterator __erase_wth_one_child(Iterator iter) noexcept
     {
-        _DNode* parent = (iter.node)->parent;
-        _DNode* child = ((iter.node)->left) ? 
+        _NodePtr parent = (iter.node)->parent;
+        _NodePtr child = ((iter.node)->left) ? 
                         (iter.node)->left : (iter.node)->right;
 
         if (parent->left == iter.node)
@@ -245,62 +166,55 @@ private:
     }
 
     // Erasing with two childs
-    Iterator __hard_erase(Iterator iter)
+    Iterator __hard_erase(Iterator iter) noexcept
     {
-        Iterator min_node = __dmin(iter.node->right);
-        (iter.node)->key = min_node.node->key;
-        (iter.node)->value = min_node.node->value;
+        Iterator min_node = min(iter.node->right);
+        (iter.node)->set(min_node.node->key, min_node.node->value);
 
         __simple_erase(min_node);
 
         return iter;
     }
 
-    void __delete_branch(Iterator vertex)
-    {
-        auto child = __dmin(vertex);
-    }
-
 public:
-    Dict(void) = default;
+    Dict(void) noexcept = default;
 
-    Dict(const Dict& other) :
+    Dict(const Dict& other) noexcept :
         root(root) {}
 
-    Dict(Dict&& other):
+    Dict(Dict&& other) noexcept :
         root(other.root)
     { 
         other.root = nullptr; 
-        other.size = 0;    
+        other.dsize = 0;    
     }
 
-    Dict(std::initializer_list<std::pair<_Key, _Value>> il)
+    Dict(std::initializer_list<std::pair<_Key, _Value>> il) noexcept
     {
         for(auto& i : il)
             insert(i.first, i.second);
     }
 
-    virtual void insert(const _Key& key, const _Value& value)
+    void insert(const _Key& key, const _Value& value) noexcept
     {
         if (root == nullptr)
-        { 
-            root = new _DNode(key, value);
-            __create_edge_node();
-            return;
+        {  
+            root = __init_new_node(nullptr, key, value); 
+            return; 
         }
+        
+        assert(root != nullptr && dsize > 0);
 
-        _DNode* node = root;
+        _NodePtr node = root;
         while (true) // while node isn't leaf
         {
-            if (key == node->key)
-            { return; }
+            if (key == node->key) return;
 
             if (key < node->key)
             {
                 if (node->left == nullptr)
                 {
-                    node->left = new _DNode(key, value);
-                    node->left->parent = node;
+                    node->left = __init_new_node(node, key, value);
                     break;
                 }
                 node = node->left;
@@ -309,20 +223,16 @@ public:
 
             else if (node->right == nullptr)
             {
-                node->right = new _DNode(key, value);
-                node->right->parent = node;
-
+                node->right = __init_new_node(node, key, value);
                 break;
             }
             node = node->right;
         }
-
-        ++dsize;
     }
 
-    Iterator at(const _Key& key) const
+    Iterator at(const _Key& key) const noexcept
     {
-        _DNode* node = root;
+        _NodePtr node = root;
         while (true)
         {
             if (node == nullptr)
@@ -337,7 +247,7 @@ public:
         }
     }
 
-    virtual Iterator erase(Iterator iter)
+    Iterator erase(Iterator iter) noexcept
     {
         if ((iter.node)->left == nullptr && (iter.node)->right == nullptr)
             return __simple_erase(iter);
@@ -348,13 +258,13 @@ public:
         return __erase_wth_one_child(iter);
     }
 
-    size_t size(void) const
+    size_t size(void) const noexcept
     { return dsize; }
 
-    void clear(void)
+    void clear(void) noexcept
     {
-        auto child = begin();
-        auto node = ++(begin());
+        Iterator child = begin();
+        Iterator node = ++(begin());
 
         for (node; node != end(); ++node)
         {
@@ -366,53 +276,51 @@ public:
         root = nullptr;
     }
 
-    Iterator min(void) const
-    { return __dmin(root); }
+    Iterator min(void) const noexcept
+    { 
+        _NodePtr node = root;
+        while (node->left != nullptr)
+            node = node->left;
 
-    Iterator max(void) const
-    { return __dmax(root); }
-
-    Iterator begin(void) const
-    { return __dmin(root); }
-
-    Iterator end(void) const
-    { return Iterator{ root->parent }; }
-
-    ConstIterator cbegin(void) const
-    { return begin(); }
-
-    ConstIterator cend(void) const
-    { return end(); }
-
-    ReverseIterator rbegin(void) const
-    { return __dmax(root); }
-
-    ReverseIterator rend(void) const
-    { return ReverseIterator{ nullptr }; }
-
-    ConstReverseIterator crbegin(void) const
-    { return rbegin(); }
-
-    ConstReverseIterator crend(void) const
-    { return rend(); }
-
-    Dict& operator=(const Dict& other)
-    {
-
+        return Iterator{ node };
     }
 
-    Dict& operator=(Dict&& other)
+    Iterator max(void) const noexcept
+    { 
+        _NodePtr node = root;
+        while (node->right != nullptr)
+            node = node->right;
+
+        return Iterator{ node };    
+    }
+
+    Iterator begin(void) const noexcept
+    { return Iterator{ root }; }
+
+    Iterator end(void) const noexcept
+    { return Iterator{ nullptr }; }
+
+    ConstIterator cbegin(void) const noexcept
+    { return static_cast<ConstIterator>(begin()); }
+
+    ConstIterator cend(void) const noexcept
+    { return static_cast<ConstIterator>(end()); }
+
+    Dict& operator=(Dict&& other) noexcept
     {
         *this = std::move(other);
         return *this;
     }
 
-    ~Dict()
-    {
-        clear();
-    }
+    ~Dict() noexcept
+    { clear(); }
 };
 
 }
 
 #endif
+
+/*
+* This library was dedicated to my lovely three suns: Amy, Clara and Victoria.
+* From Yan with :heart:
+*/

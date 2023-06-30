@@ -1,7 +1,7 @@
-#ifndef __gqueue_hpp
-#define __gqueue_hpp
+#ifndef __graph_queue_hpp
+#define __graph_queue_hpp
 
-#include "../glist/list.hpp"
+#include "../list/list.hpp"
 
 
 namespace Graph
@@ -26,9 +26,7 @@ public:
         container(container) {}
 
     void push_back(_Tx value)
-    { 
-        container.push_back(value); 
-    }
+    {  container.push_back(value); }
 
     value_type pop(void)
     { 
@@ -38,19 +36,13 @@ public:
     }
 
     reference front(void) const
-    { 
-        return container.front(); 
-    }
+    { return container.front(); }
 
     reference back(void) const
-    { 
-        return container.back(); 
-    }
+    { return container.back(); }
 
     constexpr size_t size(void) const
-    { 
-        return container.size(); 
-    }
+    { return container.size(); }
 
     constexpr Queue& operator=(const _Cont other)
     { 
