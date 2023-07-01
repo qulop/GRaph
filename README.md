@@ -5,13 +5,15 @@ ___
 [![License: MIT](https://img.shields.io/badge/License-MIT-purple.svg)](https://opensource.org/licenses/MIT)
 
 GRaph included all main algorithms, such as:
-+ (Not complite) String - `String`
-+ (Not complite) Dynamic array - `Vec`
-+ Queue - `Queue`
-+ (Not complite) Stack - `Stack`
-+ Binary search tree(Red-Black) - `Dict`
-  + (Not complite) Hash-Table - `UnorderedDict`
-+ (Not complite) Graph - `Net`
-+ (Not complite) Memory algorithms 
-+ (Not complite) Basic algorithms
++ String - `Graph::String`
++ Dynamic array - `Graph::Vec`
++ List - `Graph::List`
++ Queue - `Graph::Queue`
++ Stack - `Graph::Stack`
++ Binary search tree(Red-Black) - `Graph::Dict`
+  + Hash-Table - `Graph::HashDict`
++ Graph - `Graph::Net`
++ Memory algorithms - `Graph::Memo::` namespace 
++ Basic algorithms - `Graph::Algo::` namespace
+___
   
