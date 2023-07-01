@@ -1,7 +1,6 @@
 #ifndef __graph_dict_hpp
 #define __graph_dict_hpp
 
-#include <iterator>
 #include <initializer_list>
 #include <utility>
 #include <memory>
@@ -11,38 +10,78 @@
 namespace Graph 
 {
 
+
 template<typename _Tree>
-class _TreeBasicIterator
+class _TreeConstIterator
 {
 public:
 
     using _NodePtr = typename _Tree::_NodePtr;
-    using ValueType = typename _Tree::ValueType;
+    using ValueType = const typename _Tree::ValueType::second_type;
+    using KeyType = const typename _Tree::KeyType;
     using Pointer = _NodePtr;
-    using _MyIter = _TreeBasicIterator<_Tree>;
+    using _MyIter = _TreeConstIterator<_Tree>;
 
+private:
+
+    _NodePtr __next(void) noexcept
+    {
+        _NodePtr t_node =  node;
+
+        if (t_node->right != nullptr)
+        {
+            t_node = t_node->right;
+            while (t_node->left != nullptr)
+                t_node = t_node->left;
+        } 
+        else    // then rising up
+        {
+            _NodePtr parent = t_node->parent;
+            while (parent != nullptr && t_node == parent->right)
+            {
+                t_node = parent;
+                parent = t_node->parent;
+            }
+            t_node = parent;
+        }
+
+        return t_node;
+    }
+
+public:
 
     _NodePtr node = nullptr;
 
-    _TreeBasicIterator(void) = delete;
+    _TreeConstIterator(void) = delete;
     
-    _TreeBasicIterator(_NodePtr node) noexcept :
+    _TreeConstIterator(_NodePtr node) noexcept :
         node(node)
     {}
 
-    _TreeBasicIterator(_MyIter& other) noexcept :
+    _TreeConstIterator(_MyIter& other) noexcept :
         node(other.node)
     {}
 
-    _TreeBasicIterator(_MyIter&& other) noexcept :
+    _TreeConstIterator(_MyIter&& other) noexcept :
         node(other.node)
     { other.node = nullptr; }
 
-    _MyIter& next(void)
+    _MyIter& next(void) noexcept
     { return ++*this; }
 
-    bool has_next(void)
-    { return node == nullptr; }
+    bool has_next(void) const noexcept
+    { return (__next() != nullptr); }
+
+    KeyType& key(void) const noexcept
+    { return node->key; }
+
+    _MyIter& advance(size_t n) noexcept
+    {
+        for (size_t i = 0; has_next(); next())
+            if (i == n - 1)
+                break;
+        return *this;
+    }
 
     _MyIter& operator=(const _MyIter& other) noexcept
     {
@@ -63,42 +102,22 @@ public:
     bool operator!=(const _MyIter& other) const noexcept
     { return !(*this == other.node); }
 
-    ValueType operator*(void) const noexcept
-    { return ValueType{ node->key, node->value }; }
+    ValueType& operator*(void) const noexcept
+    { return node->value; }
 
     // Pointer operator->(void) const noexcept
     // { return std::pointer_traits<_NodePtr>::pointer_to(**this); }
 
     _MyIter& operator++(void) noexcept
     {
-        if (node->left == nullptr)
-        {
-            node = node->right;
-            return *this;
-        }
+        node = __next();
 
-        _NodePtr rmost = node->left;
-        while (rmost->right != nullptr && rmost->right != node)
-            rmost = rmost->right;
-
-        if (rmost->right == nullptr)
-        {
-            rmost->right = node;
-            node = node->left;
-        } 
-        else
-        {
-            rmost->right = nullptr;
-            node = node->right;
-            return *this;
-        }
-
-        return ++*this;
+        return *this;
     }
 
     _MyIter operator++(int) noexcept
     {
-        _MyIter tmp = node;
+        _MyIter tmp = *this;
         ++*this;
 
         return tmp;
@@ -116,8 +135,8 @@ public:
     using _Node = _DNode<_Key, _Value>;
     using _NodePtr = _Node*;
 
-    using Iterator = _TreeBasicIterator<Dict<_Key, _Value>>;
-    using ConstIterator = const _TreeBasicIterator<Dict<_Key, _Value>>;
+    using Iterator = _TreeConstIterator<Dict<_Key, _Value>>;    // REPLACE
+    using ConstIterator = _TreeConstIterator<Dict<_Key, _Value>>;
 
 private:
 
@@ -295,7 +314,7 @@ public:
     }
 
     Iterator begin(void) const noexcept
-    { return Iterator{ root }; }
+    { return Iterator{ min() }; }
 
     Iterator end(void) const noexcept
     { return Iterator{ nullptr }; }

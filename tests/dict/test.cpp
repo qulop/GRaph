@@ -1,6 +1,5 @@
 #include "TEST_iterator_methods.hpp"
 #include <iostream>
-#include <map>
 
 
 int main(void)
@@ -16,9 +15,4 @@ int main(void)
         { 9, 9 },
         { 8, 8 }
     };
-
-    Graph::Dict<int, int>::Iterator it = dict.begin();
-    it.next();
-    for (it; it.has_next(); it.next())
-        std::cout << (*it).first << std::endl;
 }
