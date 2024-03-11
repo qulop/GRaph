@@ -7,11 +7,14 @@ build/
 build.bat
 
 # future section
-graph/lib/
-graph/net/
-graph/stack/
-graph/vec/
-graph/memory/
+graph/json/
+graph/base/net/
+graph/base/memory/
+graph/base/list/forward_list.hpp
+graph/base/algorithm.hpp
+graph/base/vec.hpp
+graph/base/stack.hpp
+tests/
 
 # some other files/extensions...
 *.png
