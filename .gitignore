@@ -52,3 +52,4 @@ __tests__/
 *.exe
 *.out
 *.app
+tests
