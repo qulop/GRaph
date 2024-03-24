@@ -1,10 +1,10 @@
-#ifndef __gstack_hpp
-#define __gstack_hpp
+#ifndef RUBY_STACK_HPP
+#define RUBY_STACK_HPP
 
 #include <deque>
 
 
-namespace Graph::Standart
+namespace Ruby::Standart
 {
     template<typename _Tx, typename _Base=std::deque<_Tx>>
     class Stack
@@ -53,4 +53,4 @@ namespace Graph::Standart
 
 }
 
-#endif
+#endif // RUBY_STACK_HPP

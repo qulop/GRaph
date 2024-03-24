@@ -1,10 +1,10 @@
-#ifndef __graph_queue_hpp
-#define __graph_queue_hpp
+#ifndef RUBY_QUEUE_HPP
+#define RUBY_QUEUE_HPP
 
 #include "BidirectionalList.hpp"
 
 
-namespace Graph::Standart
+namespace Ruby::Standart
 {
     template<typename _Tx, typename _Cont=List<_Tx>>
     class Queue
@@ -58,4 +58,4 @@ namespace Graph::Standart
 
 }
 
-#endif
+#endif // RUBY_QUEUE_HPP

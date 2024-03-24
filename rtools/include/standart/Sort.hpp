@@ -1,8 +1,8 @@
-#ifndef __graph_algo_sort_hpp
-#define __graph__algo_sort_hpp
+#ifndef RUBY_SORT_HPP
+#define RUBY_SORT_HPP
 
 
-namespace Graph::Standart
+namespace Ruby::Standart
 {
     template<typename Tx>
     struct Quicksort
@@ -73,4 +73,4 @@ namespace Graph::Standart
     }
 }
 
-#endif
+#endif // RUBY_SORT_HPP

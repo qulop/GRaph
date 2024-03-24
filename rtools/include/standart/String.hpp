@@ -1,7 +1,8 @@
-#ifndef __graph_basic_string_hpp
+#ifndef RUBY_BASIC_STRING_HPP
+#define RUBY_BASIC_STRING_HPP
 
 
-namespace Graph::Standart
+namespace Ruby::Standart
 {
 	template<typename CharType>
 	class BasicString
@@ -18,3 +19,5 @@ namespace Graph::Standart
 	using String = BasicString<char>;
 	using WString = BasicString<wchar_t>;
 }
+
+#endif // RUBY_BASIC_STRING_HPP

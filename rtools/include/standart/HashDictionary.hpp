@@ -1,5 +1,5 @@
-#ifndef __graph_hash_dict_hpp
-#define __graph_hash_dict_hpp
+#ifndef RUBY_HASH_MAP_HPP
+#define RUBY_HASH_MAP_HPP
 
 #include <vector>
 #include <functional>
@@ -7,7 +7,7 @@
 #include <type_traits>
 
 
-namespace Graph::Standart
+namespace Ruby::Standart
 {
 
     template<typename _Key, typename _Value>

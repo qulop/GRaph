@@ -1,5 +1,5 @@
-#ifndef __graph_list_hpp
-#define __graph_list_hpp
+#ifndef RUBY_LIST_HPP
+#define RUBY_LIST_HPP
 
 // #define NDEBUG
 
@@ -10,7 +10,7 @@
 #include <initializer_list>
 
 
-namespace Graph::Standart
+namespace Ruby::Standart
 {
     template<typename _Tx>
     struct _LNode
@@ -371,5 +371,4 @@ namespace Graph::Standart
     };
 
 }
-
-#endif
+#endif // RUBY_LIST_HPP

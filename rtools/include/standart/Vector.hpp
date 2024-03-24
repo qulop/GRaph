@@ -1,10 +1,10 @@
-#ifndef __gvec_hpp
-#define __gvec_hpp
+#ifndef RUBY_VECTOR_HPP
+#define RUBY_VECTOR_HPP
 
 #include <iterator>
 
 
-namespace Graph::Standart
+namespace Ruby::Standart
 {
     template<typename Tx>
     class BasicVectorIterator : std::iterator<std::forward_iterator_tag, Tx>
@@ -25,4 +25,4 @@ namespace Graph::Standart
 }
 
 
-#endif
+#endif // RUBY_VECTOR_HPP

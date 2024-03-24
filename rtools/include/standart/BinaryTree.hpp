@@ -1,5 +1,5 @@
-#ifndef __graph_tree_dict_hpp
-#define __graph_tree_dict_hpp
+#ifndef RUBY_BINARY_TREE_HPP
+#define RUBY_BINARY_TREE_HPP
 
 #include <initializer_list>
 #include <utility>
@@ -7,7 +7,7 @@
 #include <cassert>
 
 
-namespace Graph::Standart
+namespace Ruby::Standart
 {
     enum _DNColor    // Dictionary node color
     {
@@ -372,7 +372,7 @@ namespace Graph::Standart
 
 }
 
-#endif
+#endif // RUBY_BINARY_TREE_HPP
 
 /*
 * This library was dedicated to my lovely three suns: Amy, Clara and Victoria.
